@@ -8,9 +8,12 @@ bot = telebot.TeleBot(config.telegram_token)
 
 
 # функция начальной настройки игры
-def game_setup():
+def check_game(chat_id) -> bool:
     if config.game is None:
-        config.game = Game()
+        bot.send_message(chat_id, 'Внимание: необходимо пересоздать игру!')
+        return False
+    else:
+        return True
 
 
 @bot.message_handler(commands=['start'])
@@ -21,7 +24,9 @@ def start(message):
 
 @bot.message_handler(commands=['rules'])
 def rules(message):
-    game_setup()
+    if not check_game(message.chat.id):
+        return
+
     bot.send_message(message.chat.id, 'Правила игры:\n'
                                       'Я загадываю число от ' + str(config.game.value_min) + ' до ' + str(config.game.value_max) + '. '
                                       ' А тебе надо отгадать его за ' + str(config.game.attempts_max) + ' попыток.'
@@ -40,17 +45,18 @@ def start(message):
 
 @bot.message_handler(content_types=['text'])
 def text(message):
-    game_setup()                                    # проверяем, что игра создана
+    if not check_game(message.chat.id):                 # проверяем, что игра создана
+        return
 
-    if config.game.number_available_attempts == 0:  # проверяем что еще можем играть
+    if config.game.number_available_attempts == 0:      # проверяем что еще можем играть
         bot.send_message(message.chat.id, 'Если захотите еще поиграть то запускайте игру заново')
 
-    if not message.text.isdigit():                  # проверка что входное число можно преобразовать в число
+    if not message.text.isdigit():                      # проверка что входное число можно преобразовать в число
         bot.send_message(message.chat.id, 'Наверно стоит попробовать ввести число...')
         bot.send_message(message.chat.id, 'Так уж и быть, попытку забирать не буду')
         return
 
-    answer = int(message.text)                      # фиксируем ответ
+    answer = int(message.text)                          # фиксируем ответ
     if config.game.make_attempt(answer):                # проверяем ответ
 
         # в случае правильного ответа
@@ -104,9 +110,6 @@ def text(message):
 
             elif delta < 5 or delta > -5:
                 bot.send_message(message.chat.id, 'Вы так близко, что я и подсказывать не буду 0_0')
-
-
-
 
 
 bot.polling(none_stop=True)
