@@ -9,7 +9,7 @@ bot = telebot.TeleBot(config.telegram_token)
 
 # функция начальной настройки игры
 def check_game(chat_id) -> bool:
-    if config.game is None:
+    if config.game is None or config.game._game_status != config.game._game_start:
         bot.send_message(chat_id, 'Внимание: необходимо пересоздать игру!')
         return False
     else:
@@ -40,7 +40,7 @@ def start(message):
     bot.send_message(message.chat.id, 'А ты смельчак! Ну что ж, начнем игру!')
     bot.send_message(message.chat.id, 'Я загадал число от' + str(config.game.value_min) + ' до ' + str(config.game.value_max) + '.'
                     'Жду от тебя ответа.')
-    bot.send_message(message.chat.id, 'Даю тебе ' + str(config.game.number_available_attempts) + ' попыток')
+    bot.send_message(message.chat.id, 'Даю Вам ' + str(config.game.number_available_attempts) + ' попыток')
 
 
 @bot.message_handler(content_types=['text'])
@@ -83,7 +83,7 @@ def text(message):
             else:
                 bot.send_message(message.chat.id, 'К сожалению вы проиграли :(')
                 bot.send_message(message.chat.id, 'Правильный ответ был ' + str(config.game._secret_value))
-                bot.send_message(message.chat.id, 'Если захотите еще поиграть то запускайте игру заново')
+                bot.send_message(message.chat.id, 'Если захотите еще поиграть, то запускайте игру заново')
                 return
 
             delta = config.game._delta_answer      # получаем разницу между заданным числом и ответом

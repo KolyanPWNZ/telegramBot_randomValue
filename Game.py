@@ -50,9 +50,15 @@ class Game:
     def game_id(self):
         return self.__game_id
 
+    # возвращает символьное обозначение статуса
     @property
     def game_status(self):
         return Game.__game_status_list[self.__games]
+
+    # возвращает id статуса
+    @property
+    def _game_status(self):
+        return self.__game_status
 
     @property
     def get_possible_statuses_game(self):
@@ -80,6 +86,21 @@ class Game:
     def _secret_value(self):
         return self.__secret_value
 
+    @property
+    def _game_not_start(self):
+        return Game.__game_not_start
+
+    @property
+    def _game_start(self):
+        return Game.__game_start
+
+    @property
+    def _game_win(self):
+        return  Game.__game_win
+
+    @property
+    def _game_lose(self):
+        return Game.__game_lose
     # ---------------------Методы-----------------------
 
 
